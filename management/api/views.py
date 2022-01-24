@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.utils.decorators import method_decorator
 
@@ -64,11 +63,12 @@ class EmployeeDelete(DestroyAPIView):
                 department__iexact=kwargs.get('department')
             )
 
-        except ObjectDoesNotExist:
+        except Employee.DoesNotExist:
             return Response(
                 {"error": "There is no employee with these specifications."},
                 status=status.HTTP_404_NOT_FOUND
             )
+
         Employee.objects.filter(
             name=employee.name,
             email=employee.email,
