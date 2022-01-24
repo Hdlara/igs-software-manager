@@ -1,12 +1,28 @@
 from django.urls import reverse
 
+from model_bakery import baker
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from management.api.serializers import EmployeesSerializer
 
+from .models import Employee
+
 
 class EmployeesViewSetTestCase(APITestCase):
+
+    def setUp(self):
+        self.employee = baker.make(
+            Employee,
+            name='Jorge',
+            email='development@hotmail.com',
+            department='development'
+        )
+
+        self.name = 'Jorge'
+        self.email = 'development@hotmail.com'
+        self.department = 'development'
 
     def test_view_returns_200_valid_registration(self):
         """
@@ -58,6 +74,24 @@ class EmployeesViewSetTestCase(APITestCase):
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_delete_employee(self):
+        """
+        tests delete employee.
+        """
+
+        url = reverse(
+            'delete-employee',
+            kwargs={
+                'name': self.name,
+                'email': self.email,
+                'department': self.department
+            }
+        )
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
 class EmployeesSerializerTestCase(APITestCase):
